@@ -8,7 +8,6 @@ import { MoviesList } from "./components/layout/main/MoviesList";
 import { Box } from "./components/layout/main/Box";
 import { WatchedSummary } from "./components/layout/main/WatchedSummary";
 import { WatchMoviesList } from "./components/layout/main/WatchMoviesList";
-import { StarRating } from "./components/ui/StarRating/StarRating";
 import { OMDB_KEY } from "./config/api-keys";
 import { Loader } from "./components/ui/Loader/Loader";
 import { ErrorMessage } from "./components/ui/Error/ErrorMessage";
@@ -71,7 +70,6 @@ export default function App() {
         <Search query={query} setQuery={setQuery} />
         <NumResults movies={movies} />
       </NavBar>
-      {/*<StarRating maxRating={5} color="yellow" size={3} defaultRating={3} />*/}
       <Main>
         <Box>
           {isLoading && <Loader />}
