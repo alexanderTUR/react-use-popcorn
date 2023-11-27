@@ -39,15 +39,15 @@ export default function App() {
     );
   };
 
+  const fetchMoviesController = new AbortController();
   const fetchMovies = async () => {
     try {
       setIsLoading(true);
       setError(null);
       const response = await fetch(
         `http://www.omdbapi.com/?apikey=${OMDB_KEY}&s=${query}`,
-      ).catch(() => {
-        throw new Error("Failed to fetch movies");
-      });
+        { signal: fetchMoviesController.signal },
+      );
       if (!response.ok) {
         throw new Error("Something went wrong");
       }
@@ -56,9 +56,12 @@ export default function App() {
         throw new Error(data.Error);
       }
       setMovies(data.Search);
+      setError(null);
     } catch (error) {
-      console.error(error.message);
-      setError(error.message);
+      if (error.name !== "AbortError") {
+        console.log(error.message);
+        setError(error.message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -70,7 +73,12 @@ export default function App() {
       setError(null);
       return;
     }
+    handleCloseMovie();
     fetchMovies();
+    return () => {
+      fetchMoviesController.abort();
+      setIsLoading(true);
+    };
   }, [query]);
 
   return (
