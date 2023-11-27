@@ -4,10 +4,16 @@ import { StarRating } from "../../ui/StarRating/StarRating";
 import { Loader } from "../../ui/Loader/Loader";
 import { ErrorMessage } from "../../ui/Error/ErrorMessage";
 
-export const MovieDetails = ({ selectedMovieId, onCloseMovie }) => {
+export const MovieDetails = ({
+  watched,
+  selectedMovieId,
+  onCloseMovie,
+  onAddToWatched,
+}) => {
   const [movieDetails, setMovieDetails] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [userRating, setUserRating] = useState(0);
 
   const {
     Title: title,
@@ -21,6 +27,25 @@ export const MovieDetails = ({ selectedMovieId, onCloseMovie }) => {
     Director: director,
     Genre: genre,
   } = movieDetails;
+
+  const isWatched = watched.some((movie) => movie.imdbId === selectedMovieId);
+  let watchedRating = watched.find(
+    (movie) => movie.imdbId === selectedMovieId,
+  )?.userRating;
+
+  const handleAddToWatched = () => {
+    const movie = {
+      imdbId: selectedMovieId,
+      title,
+      year,
+      poster,
+      runtime: Number(runtime.split(" ").at(0)),
+      imdbRating: Number(imdbRating),
+      userRating,
+    };
+    onAddToWatched(movie);
+    onCloseMovie();
+  };
 
   const fetchMovieDetails = async () => {
     try {
@@ -39,7 +64,6 @@ export const MovieDetails = ({ selectedMovieId, onCloseMovie }) => {
         throw new Error(data.Error);
       }
       setMovieDetails(data);
-      console.log(data);
     } catch (error) {
       console.error(error.message);
       setError(error.message);
@@ -49,7 +73,6 @@ export const MovieDetails = ({ selectedMovieId, onCloseMovie }) => {
   };
 
   useEffect(() => {
-    console.log("MovieDetails mounted");
     fetchMovieDetails();
   }, [selectedMovieId]);
 
@@ -76,9 +99,25 @@ export const MovieDetails = ({ selectedMovieId, onCloseMovie }) => {
             </div>
           </header>
           <section>
-            <div className="rating">
-              <StarRating maxRating={10} size={2} color="yellow" />
-            </div>
+            {!isWatched ? (
+              <div className="rating">
+                <StarRating
+                  maxRating={10}
+                  size={2}
+                  color="yellow"
+                  onSetRating={setUserRating}
+                />
+                {userRating > 0 && (
+                  <button className="btn-add" onClick={handleAddToWatched}>
+                    Add to Watched
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="rating">
+                <p>You rate this movie with 🌟 {watchedRating}</p>
+              </div>
+            )}
             <p>
               <em>{plot}</em>
             </p>

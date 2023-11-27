@@ -14,7 +14,7 @@ import { ErrorMessage } from "./components/ui/Error/ErrorMessage";
 import { MovieDetails } from "./components/layout/main/MovieDetails";
 
 export default function App() {
-  const [query, setQuery] = useState("interstellar");
+  const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,6 +27,16 @@ export default function App() {
 
   const handleCloseMovie = () => {
     setSelectedMovieId(null);
+  };
+
+  const handleAddToWatched = (movie) => {
+    setWatched((prevWatched) => [...prevWatched, movie]);
+  };
+
+  const handleRemoveFromWatched = (id) => {
+    setWatched((prevWatched) =>
+      prevWatched.filter((movie) => movie.imdbId !== id),
+    );
   };
 
   const fetchMovies = async () => {
@@ -81,13 +91,18 @@ export default function App() {
         <Box>
           {selectedMovieId ? (
             <MovieDetails
+              watched={watched}
               selectedMovieId={selectedMovieId}
               onCloseMovie={handleCloseMovie}
+              onAddToWatched={handleAddToWatched}
             />
           ) : (
             <>
               <WatchedSummary watched={watched} />
-              <WatchMoviesList watched={watched} />
+              <WatchMoviesList
+                watched={watched}
+                onRemoveFromWatched={handleRemoveFromWatched}
+              />
             </>
           )}
         </Box>
