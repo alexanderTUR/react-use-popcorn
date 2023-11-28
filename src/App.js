@@ -16,7 +16,10 @@ import { MovieDetails } from "./components/layout/main/MovieDetails";
 export default function App() {
   const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useState(() => {
+    const watched = JSON.parse(localStorage.getItem("watched"));
+    return watched || [];
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedMovieId, setSelectedMovieId] = useState(null);
@@ -80,6 +83,10 @@ export default function App() {
       setIsLoading(true);
     };
   }, [query]);
+
+  useEffect(() => {
+    localStorage.setItem("watched", JSON.stringify(watched));
+  }, [watched]);
 
   return (
     <>
