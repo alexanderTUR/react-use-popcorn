@@ -3,6 +3,7 @@ import { OMDB_KEY } from "../../../config/api-keys";
 import { StarRating } from "../../ui/StarRating/StarRating";
 import { Loader } from "../../ui/Loader/Loader";
 import { ErrorMessage } from "../../ui/Error/ErrorMessage";
+import { useKey } from "../../../hooks/useKey";
 
 export const MovieDetails = ({
   watched,
@@ -46,6 +47,8 @@ export const MovieDetails = ({
     onAddToWatched(movie);
     onCloseMovie();
   };
+
+  useKey("Escape", onCloseMovie);
 
   const fetchMovieDetails = async () => {
     try {
